@@ -3,9 +3,12 @@ package com.cursor.demo.security;
 import com.cursor.demo.dto.AuthenticationRequestDto;
 import com.cursor.demo.model.UserEntity;
 import com.cursor.demo.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.stereotype.Service;
 
+@Service
 public class SecurityServiceImplementation implements SecurityService{
     private final UserService userService;
     private final AuthenticationManager authenticationManager;

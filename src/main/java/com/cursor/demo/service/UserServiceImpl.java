@@ -5,6 +5,7 @@ import com.cursor.demo.model.UserEntity;
 
 import com.cursor.demo.repository.UserRepository;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,5 +26,12 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserEntity findByUsername(String username) {
        return null;
+    }
+
+
+    @Bean
+    String string()
+    {
+        return "";
     }
 }
