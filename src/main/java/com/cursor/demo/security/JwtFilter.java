@@ -18,7 +18,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-public class JwtFilter  extends GenericFilterBean {
+public class JwtFilter extends GenericFilterBean {
     private final JwtProvider jwtProvider;
 
     @Override
@@ -27,15 +27,14 @@ public class JwtFilter  extends GenericFilterBean {
                          FilterChain chain) throws IOException, ServletException {
         String token = jwtProvider.resolveToken((HttpServletRequest) request);
 
-        try {
-            if (token != null && jwtProvider.validateToken(token)) {
-                Authentication authentication = jwtProvider.getAuthentication(token);
+        if (token != null && jwtProvider.validateToken(token)) {
+            Authentication authentication = jwtProvider.getAuthentication(token);
+
+            if (authentication != null) {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        } catch (JwtAuthenticationException e) {
-            SecurityContextHolder.clearContext();
-            ((HttpServletResponse) response).sendError(HttpStatus.FORBIDDEN.value());
         }
+
         chain.doFilter(request, response);
     }
 }

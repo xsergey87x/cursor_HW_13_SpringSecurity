@@ -7,10 +7,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 
@@ -26,13 +29,12 @@ import java.util.Date;
 public class JwtProvider {
     @Value("Authorization")
     private String authorizationHeader;
-    @Value("there is no spoon; greed is good")
+    @Value("life is good")
     private String secret;
     @Value("userId")
     private String userId;
-
-    private int validity = 900000;
-    private Key key;
+    @Value("800000")
+    private int validity;
 
     private final UserDetailsService userDetailsService;
 
@@ -41,8 +43,8 @@ public class JwtProvider {
         secret = Base64.getEncoder().encodeToString(secret.getBytes());
     }
 
-    public String createToken(String username, Long id) {
-        Claims claims = Jwts.claims().setSubject(username);
+    public String createToken(String userName, Long id) {
+        Claims claims = Jwts.claims().setSubject(userName);
         claims.put(userId, id);
         Date expiration = new Date(System.currentTimeMillis() + validity);
         return Jwts.builder()
@@ -50,6 +52,11 @@ public class JwtProvider {
                 .setExpiration(expiration)
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     public boolean validateToken(String token) {
@@ -70,11 +77,12 @@ public class JwtProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(getUsername(token));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(getUserName(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", new ArrayList<>());
     }
 
-    private String getUsername(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+
+    private String getUserName(String token) {
+        return Jwts.parserBuilder().setSigningKey(secret).build().parseClaimsJws(token).getBody().getSubject();
     }
 }

@@ -63,7 +63,7 @@ public class SecurityUser implements UserDetails {
     public static UserDetails getUserDetailsFromUser(UserEntity user) {
 
         return new org.springframework.security.core.userdetails.User(
-                user.getFirstName(), user.getPassword(),
+                user.getUserName(), user.getPassword(),
                 new ArrayList<SimpleGrantedAuthority>());
     }
 }

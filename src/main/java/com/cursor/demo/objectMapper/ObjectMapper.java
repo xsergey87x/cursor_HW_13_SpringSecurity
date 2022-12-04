@@ -8,10 +8,8 @@ import lombok.NoArgsConstructor;
 public class ObjectMapper {
 
     public static UserEntity mapFromDtoToEntity(UserDto userDto) {
-        return UserEntity.builder()
-                .firstName(userDto.getUsername())
-                .password(userDto.getPassword())
-                .build();
+        System.out.println("****************************************************" + userDto.getUserName());
+        return new UserEntity(userDto.getUserName(), userDto.getPassword(), "@");
     }
 
 }
